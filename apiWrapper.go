@@ -3,18 +3,19 @@ package apiWrapper
 import (
 	"encoding/json"
 	"fmt"
-	"go-lol-esports-api-wrapper/enums"
-	"go-lol-esports-api-wrapper/models"
 	"io"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/matheusorienrac/go-lol-esports-api-wrapper/enums"
+	"github.com/matheusorienrac/go-lol-esports-api-wrapper/models"
 )
 
 var client = &http.Client{}
 
 // Sends a request to the specified endpoint with the specified query parameters.
-func requestLoLesportsAPI(endpoint string, queryParameters map[string]string) []byte {
+func RequestLoLesportsAPI(endpoint string, queryParameters map[string]string) []byte {
 	req, err := http.NewRequest("GET", endpoint, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -43,10 +44,10 @@ func requestLoLesportsAPI(endpoint string, queryParameters map[string]string) []
 }
 
 // Gets all games that are currently live.
-func getLiveGames(hl enums.HlType) models.Live {
+func GetLiveGames(hl enums.HlType) models.Live {
 	getLiveGamesEndpoint := "https://esports-api.lolesports.com/persisted/gw/getLive"
 
-	bodyBytes := requestLoLesportsAPI(getLiveGamesEndpoint, map[string]string{"hl": hl.String()})
+	bodyBytes := RequestLoLesportsAPI(getLiveGamesEndpoint, map[string]string{"hl": hl.String()})
 
 	fmt.Println(string(bodyBytes))
 
@@ -60,10 +61,10 @@ func getLiveGames(hl enums.HlType) models.Live {
 }
 
 // Gets a window of match details for a game that is either live or already finished.
-func getWindow(gameID int64, startingTime time.Time) models.Window {
+func GetWindow(gameID int64, startingTime time.Time) models.Window {
 	getWindowEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/window/{%s}", gameID)
 
-	bodyBytes := requestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.String()})
+	bodyBytes := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.String()})
 
 	var gameWindow = models.Window{}
 	err := json.Unmarshal(bodyBytes, &gameWindow)
@@ -75,11 +76,11 @@ func getWindow(gameID int64, startingTime time.Time) models.Window {
 }
 
 // Gets details of a game. participantIDs is a list of participant ids separated by underscores.
-func getDetails(gameID int64, startingTime time.Time, participantIDs string) models.Details {
+func GetDetails(gameID int64, startingTime time.Time, participantIDs string) models.Details {
 
 	getDetailsEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/details/{%s}", gameID)
 
-	bodyBytes := requestLoLesportsAPI(getDetailsEndpoint, map[string]string{"startingTime": startingTime.String(), "participantIds": participantIDs})
+	bodyBytes := RequestLoLesportsAPI(getDetailsEndpoint, map[string]string{"startingTime": startingTime.String(), "participantIds": participantIDs})
 
 	var gameDetails = models.Details{}
 	err := json.Unmarshal(bodyBytes, &gameDetails)
