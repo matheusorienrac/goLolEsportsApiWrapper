@@ -1,4 +1,4 @@
-package gololesportsapiwrapper
+package goLolEsportsApiWrapper
 
 import (
 	"encoding/json"
