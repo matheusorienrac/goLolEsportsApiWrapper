@@ -4,24 +4,24 @@ package enums
 type HlType int
 
 const (
-	enUS HlType = iota
-	enGB
-	enAU
-	csCZ
-	deDE
-	elGR
-	esEs
-	esMX
-	frFR
-	huHU
-	itIT
-	plPL
-	ptBR
-	roRO
-	ruRU
-	trTR
-	jaJP
-	koKR
+	EnUS HlType = iota
+	EnGB
+	EnAU
+	CsCZ
+	DeDE
+	ElGR
+	EsEs
+	EsMX
+	FrFR
+	HuHU
+	ItIT
+	PlPL
+	PtBR
+	RoRO
+	RuRU
+	TrTR
+	JaJP
+	KoKR
 )
 
 func (hl HlType) String() string {
