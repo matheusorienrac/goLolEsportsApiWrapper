@@ -1,4 +1,4 @@
-package apiWrapper
+package gololesportsapiwrapper
 
 import (
 	"encoding/json"
@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/matheusorienrac/go-lol-esports-api-wrapper/enums"
-	"github.com/matheusorienrac/go-lol-esports-api-wrapper/models"
+	"github.com/matheusorienrac/goLolEsportsApiWrapper/enums"
+	"github.com/matheusorienrac/goLolEsportsApiWrapper/models"
 )
 
 var client = &http.Client{}

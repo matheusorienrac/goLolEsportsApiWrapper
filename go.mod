@@ -1,3 +1,3 @@
-module "github.com/matheusorienrac/go-lol-esports-api-wrapper" 
+module "github.com/matheusorienrac/goLolEsportsApiWrapper" 
 
 go 1.19
