@@ -62,7 +62,7 @@ func GetLiveGames(hl enums.HlType) models.Live {
 
 // Gets a window of match details for a game that is either live or already finished.
 func GetWindow(gameID int64, startingTime time.Time) models.Window {
-	getWindowEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/window/{%s}", gameID)
+	getWindowEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/window/{%v}", gameID)
 
 	bodyBytes := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.String()})
 

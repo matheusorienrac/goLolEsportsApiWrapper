@@ -2,74 +2,6 @@ package models
 
 import "time"
 
-// Enum for the hl parameter
-type hlType int
-
-const (
-	enUS hlType = iota
-	enGB
-	enAU
-	csCZ
-	deDE
-	elGR
-	esEs
-	esMX
-	frFR
-	huHU
-	itIT
-	plPL
-	ptBR
-	roRO
-	ruRU
-	trTR
-	jaJP
-	koKR
-)
-
-func (hl hlType) String() string {
-	switch hl {
-	case enUS:
-		return "en-US"
-	case enGB:
-		return "en-GB"
-	case enAU:
-		return "en-AU"
-	case csCZ:
-		return "cs-CZ"
-	case deDE:
-		return "de-DE"
-	case elGR:
-		return "el-GR"
-	case esEs:
-		return "es-ES"
-	case esMX:
-		return "es-MX"
-	case frFR:
-		return "fr-FR"
-	case huHU:
-		return "hu-HU"
-	case itIT:
-		return "it-IT"
-	case plPL:
-		return "pl-PL"
-	case ptBR:
-		return "pt-BR"
-	case roRO:
-		return "ro-RO"
-	case ruRU:
-		return "ru-RU"
-	case trTR:
-		return "tr-TR"
-	case jaJP:
-		return "ja-JP"
-	case koKR:
-		return "ko-KR"
-	default:
-		return "en-US"
-	}
-	return [...]string{"en-US", "en-GB", "en-AU", "cs-CZ", "de-DE", "el-GR", "es-ES", "es-MX", "fr-FR", "hu-HU", "it-IT", "pl-PL", "pt-BR", "ro-RO", "ru-RU", "tr-TR", "ja-JP", "ko-KR"}[hl]
-}
-
 type Live struct {
 	Data struct {
 		Schedule struct {
@@ -246,3 +178,36 @@ type Details struct {
 		} `json:"participants"`
 	} `json:"frames"`
 }
+
+type Match struct {
+	ID    string `json:"id"`
+	Teams []struct {
+		ID     string `json:"id"`
+		Name   string `json:"name"`
+		Slug   string `json:"slug"`
+		Code   string `json:"code"`
+		Image  string `json:"image"`
+		Result struct {
+			Outcome  interface{} `json:"outcome"`
+			GameWins int         `json:"gameWins"`
+		} `json:"result"`
+		Record struct {
+			Wins   int `json:"wins"`
+			Losses int `json:"losses"`
+		} `json:"record"`
+	} `json:"teams"`
+	Strategy struct {
+		Type  string `json:"type"`
+		Count int    `json:"count"`
+	} `json:"strategy"`
+	Games []struct {
+		Number int    `json:"number"`
+		ID     string `json:"id"`
+		State  string `json:"state"`
+		Teams  []struct {
+			ID   string `json:"id"`
+			Side string `json:"side"`
+		} `json:"teams"`
+		Vods []interface{} `json:"vods"`
+	} `json:"games"`
+} `json:"match"`
