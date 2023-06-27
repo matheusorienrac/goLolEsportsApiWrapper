@@ -62,7 +62,7 @@ func GetLiveGames(hl enums.HlType) models.Live {
 
 // Gets a window of match details for a game that is either live or already finished.
 func GetWindow(gameID int64, startingTime time.Time) models.Window {
-	getWindowEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/window/{%v}", gameID)
+	getWindowEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/window/%v", gameID)
 
 	startingTime = transformTime(startingTime)
 	bodyBytes := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.Format(time.RFC3339), "hl": enums.EnUS.String()})
@@ -80,7 +80,7 @@ func GetWindow(gameID int64, startingTime time.Time) models.Window {
 // Gets details of a game. participantIDs is a list of participant ids separated by underscores.
 func GetDetails(gameID int64, startingTime time.Time, participantIDs string) models.Details {
 
-	getDetailsEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/details/{%v}", gameID)
+	getDetailsEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/details/%v", gameID)
 
 	bodyBytes := RequestLoLesportsAPI(getDetailsEndpoint, map[string]string{"startingTime": startingTime.String(), "participantIds": participantIDs})
 
