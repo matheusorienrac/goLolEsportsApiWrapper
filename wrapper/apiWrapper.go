@@ -54,7 +54,8 @@ func GetLiveGames(hl enums.HlType) models.Live {
 	var liveGames = models.Live{}
 	err := json.Unmarshal(bodyBytes, &liveGames)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("there was an error unmarshalling the liveGames" + err.Error())
+
 	}
 
 	return liveGames
@@ -71,7 +72,7 @@ func GetWindow(gameID int64, startingTime time.Time) models.Window {
 	var gameWindow = models.Window{}
 	err := json.Unmarshal(bodyBytes, &gameWindow)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("there was an error unmarshalling the gameWindow" + err.Error())
 	}
 
 	return gameWindow
@@ -87,7 +88,8 @@ func GetDetails(gameID int64, startingTime time.Time, participantIDs string) mod
 	var gameDetails = models.Details{}
 	err := json.Unmarshal(bodyBytes, &gameDetails)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("there was an error unmarshalling the gameDetails" + err.Error())
+
 	}
 
 	return gameDetails
