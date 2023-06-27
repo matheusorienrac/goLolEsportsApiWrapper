@@ -1,4 +1,4 @@
-package goLolEsportsApiWrapper
+package wrapper
 
 import (
 	"encoding/json"
@@ -64,8 +64,10 @@ func GetLiveGames(hl enums.HlType) models.Live {
 func GetWindow(gameID int64, startingTime time.Time) models.Window {
 	getWindowEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/window/{%v}", gameID)
 
-	bodyBytes := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.String()})
+	startingTime = transformTime(startingTime)
+	bodyBytes := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.Format(time.RFC3339), "hl": enums.EnUS.String()})
 
+	fmt.Println(string(bodyBytes))
 	var gameWindow = models.Window{}
 	err := json.Unmarshal(bodyBytes, &gameWindow)
 	if err != nil {
@@ -78,7 +80,7 @@ func GetWindow(gameID int64, startingTime time.Time) models.Window {
 // Gets details of a game. participantIDs is a list of participant ids separated by underscores.
 func GetDetails(gameID int64, startingTime time.Time, participantIDs string) models.Details {
 
-	getDetailsEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/details/{%s}", gameID)
+	getDetailsEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/details/{%v}", gameID)
 
 	bodyBytes := RequestLoLesportsAPI(getDetailsEndpoint, map[string]string{"startingTime": startingTime.String(), "participantIds": participantIDs})
 
@@ -89,4 +91,25 @@ func GetDetails(gameID int64, startingTime time.Time, participantIDs string) mod
 	}
 
 	return gameDetails
+}
+
+// Transforms the time into a multiple of 10 and also removes 60 seconds so we can guarantee that
+// the window we are getting is at least 45 seconds old.
+func transformTime(startingTime time.Time) time.Time {
+	// Truncate milliseconds
+	startingTime = startingTime.Truncate(time.Second)
+
+	fmt.Println(startingTime)
+	// End time needs to be at least 45 seconds old.
+	startingTime = startingTime.Add(-time.Duration(60) * time.Second)
+
+	// Truncate seconds to be divisible by 10
+	seconds := startingTime.Second()
+	remainder := seconds % 10
+	startingTime = startingTime.Add(-time.Duration(remainder) * time.Second)
+
+	// Subtracts 10 seconds so we are always getting the previous window
+	fmt.Println(startingTime)
+
+	return startingTime
 }

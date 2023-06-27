@@ -142,6 +142,7 @@ type Window struct {
 		} `json:"redTeam"`
 	} `json:"frames"`
 }
+
 type Details struct {
 	Frames []struct {
 		Rfc460Timestamp time.Time `json:"rfc460Timestamp"`
@@ -178,36 +179,3 @@ type Details struct {
 		} `json:"participants"`
 	} `json:"frames"`
 }
-
-type Match struct {
-	ID    string `json:"id"`
-	Teams []struct {
-		ID     string `json:"id"`
-		Name   string `json:"name"`
-		Slug   string `json:"slug"`
-		Code   string `json:"code"`
-		Image  string `json:"image"`
-		Result struct {
-			Outcome  interface{} `json:"outcome"`
-			GameWins int         `json:"gameWins"`
-		} `json:"result"`
-		Record struct {
-			Wins   int `json:"wins"`
-			Losses int `json:"losses"`
-		} `json:"record"`
-	} `json:"teams"`
-	Strategy struct {
-		Type  string `json:"type"`
-		Count int    `json:"count"`
-	} `json:"strategy"`
-	Games []struct {
-		Number int    `json:"number"`
-		ID     string `json:"id"`
-		State  string `json:"state"`
-		Teams  []struct {
-			ID   string `json:"id"`
-			Side string `json:"side"`
-		} `json:"teams"`
-		Vods []interface{} `json:"vods"`
-	} `json:"games"`
-} `json:"match"`
