@@ -79,6 +79,11 @@ func GetWindow(gameID int64, startingTime time.Time) (*models.Window, error) {
 	}
 
 	fmt.Printf("This is the window body: %s\n", string(bodyBytes))
+	if len(bodyBytes) == 0 {
+		fmt.Println("the body was empty")
+		return nil, nil
+	}
+
 	var gameWindow = &models.Window{}
 	err = json.Unmarshal(bodyBytes, gameWindow)
 	if err != nil {
@@ -100,6 +105,10 @@ func GetDetails(gameID int64, startingTime time.Time, participantIDs string) (*m
 		return nil, err
 	}
 
+	if len(bodyBytes) == 0 {
+		fmt.Println("the body was empty")
+		return nil, nil
+	}
 	var gameDetails = &models.Details{}
 	err = json.Unmarshal(bodyBytes, gameDetails)
 	if err != nil {
