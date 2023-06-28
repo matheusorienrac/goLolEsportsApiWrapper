@@ -78,7 +78,7 @@ func GetWindow(gameID int64, startingTime time.Time) (*models.Window, error) {
 		return nil, err
 	}
 
-	fmt.Println(string(bodyBytes))
+	fmt.Printf("This is the window body: %s\n", string(bodyBytes))
 	var gameWindow = &models.Window{}
 	err = json.Unmarshal(bodyBytes, gameWindow)
 	if err != nil {
