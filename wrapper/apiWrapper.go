@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -15,10 +14,11 @@ import (
 var client = &http.Client{}
 
 // Sends a request to the specified endpoint with the specified query parameters.
-func RequestLoLesportsAPI(endpoint string, queryParameters map[string]string) []byte {
+func RequestLoLesportsAPI(endpoint string, queryParameters map[string]string) ([]byte, error) {
 	req, err := http.NewRequest("GET", endpoint, nil)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("there was an error creating the request" + err.Error())
+		return nil, err
 	}
 
 	q := req.URL.Query()
@@ -32,67 +32,82 @@ func RequestLoLesportsAPI(endpoint string, queryParameters map[string]string) []
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("there was an error sending the request" + err.Error())
+		return nil, err
 	}
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("there was an error reading the response body" + err.Error())
+		return nil, err
 	}
 
-	return bodyBytes
+	return bodyBytes, nil
 }
 
 // Gets all games that are currently live.
-func GetLiveGames(hl enums.HlType) models.Live {
+func GetLiveGames(hl enums.HlType) (*models.Live, error) {
 	getLiveGamesEndpoint := "https://esports-api.lolesports.com/persisted/gw/getLive"
 
-	bodyBytes := RequestLoLesportsAPI(getLiveGamesEndpoint, map[string]string{"hl": hl.String()})
+	bodyBytes, err := RequestLoLesportsAPI(getLiveGamesEndpoint, map[string]string{"hl": hl.String()})
+	if err != nil {
+		fmt.Println("there was an error getting the live games" + err.Error())
+		return nil, err
+	}
 
 	fmt.Println(string(bodyBytes))
 
-	var liveGames = models.Live{}
-	err := json.Unmarshal(bodyBytes, &liveGames)
+	var liveGames = &models.Live{}
+	err = json.Unmarshal(bodyBytes, liveGames)
 	if err != nil {
-		log.Fatal("there was an error unmarshalling the liveGames" + err.Error())
-
+		fmt.Println("there was an error unmarshalling the liveGames" + err.Error())
+		return nil, err
 	}
 
-	return liveGames
+	return liveGames, nil
 }
 
 // Gets a window of match details for a game that is either live or already finished.
-func GetWindow(gameID int64, startingTime time.Time) models.Window {
+func GetWindow(gameID int64, startingTime time.Time) (*models.Window, error) {
 	getWindowEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/window/%v", gameID)
 
 	startingTime = transformTime(startingTime)
-	bodyBytes := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.Format(time.RFC3339), "hl": enums.EnUS.String()})
-
-	fmt.Println(string(bodyBytes))
-	var gameWindow = models.Window{}
-	err := json.Unmarshal(bodyBytes, &gameWindow)
+	bodyBytes, err := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.Format(time.RFC3339), "hl": enums.EnUS.String()})
 	if err != nil {
-		log.Fatal("there was an error unmarshalling the gameWindow" + err.Error())
+		fmt.Println("there was an error getting the window" + err.Error())
+		return nil, err
 	}
 
-	return gameWindow
+	fmt.Println(string(bodyBytes))
+	var gameWindow = &models.Window{}
+	err = json.Unmarshal(bodyBytes, gameWindow)
+	if err != nil {
+		fmt.Println("there was an error unmarshalling the gameWindow" + err.Error())
+		return nil, err
+	}
+
+	return gameWindow, nil
 }
 
 // Gets details of a game. participantIDs is a list of participant ids separated by underscores.
-func GetDetails(gameID int64, startingTime time.Time, participantIDs string) models.Details {
+func GetDetails(gameID int64, startingTime time.Time, participantIDs string) (*models.Details, error) {
 
 	getDetailsEndpoint := fmt.Sprintf("https://feed.lolesports.com/livestats/v1/details/%v", gameID)
 
-	bodyBytes := RequestLoLesportsAPI(getDetailsEndpoint, map[string]string{"startingTime": startingTime.String(), "participantIds": participantIDs})
-
-	var gameDetails = models.Details{}
-	err := json.Unmarshal(bodyBytes, &gameDetails)
+	bodyBytes, err := RequestLoLesportsAPI(getDetailsEndpoint, map[string]string{"startingTime": startingTime.String(), "participantIds": participantIDs})
 	if err != nil {
-		log.Fatal("there was an error unmarshalling the gameDetails" + err.Error())
-
+		fmt.Println("there was an error getting the details" + err.Error())
+		return nil, err
 	}
 
-	return gameDetails
+	var gameDetails = &models.Details{}
+	err = json.Unmarshal(bodyBytes, gameDetails)
+	if err != nil {
+		fmt.Println("there was an error unmarshalling the gameDetails" + err.Error())
+		return nil, err
+	}
+
+	return gameDetails, nil
 }
 
 // Transforms the time into a multiple of 10 and also removes 60 seconds so we can guarantee that
