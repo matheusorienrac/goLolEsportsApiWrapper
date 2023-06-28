@@ -17,7 +17,7 @@ var client = &http.Client{}
 func RequestLoLesportsAPI(endpoint string, queryParameters map[string]string) ([]byte, error) {
 	req, err := http.NewRequest("GET", endpoint, nil)
 	if err != nil {
-		fmt.Println("there was an error creating the request" + err.Error())
+		fmt.Println("there was an error creating the request: " + err.Error())
 		return nil, err
 	}
 
@@ -32,13 +32,13 @@ func RequestLoLesportsAPI(endpoint string, queryParameters map[string]string) ([
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println("there was an error sending the request" + err.Error())
+		fmt.Println("there was an error sending the request: " + err.Error())
 		return nil, err
 	}
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println("there was an error reading the response body" + err.Error())
+		fmt.Println("there was an error reading the response body: " + err.Error())
 		return nil, err
 	}
 
@@ -51,7 +51,7 @@ func GetLiveGames(hl enums.HlType) (*models.Live, error) {
 
 	bodyBytes, err := RequestLoLesportsAPI(getLiveGamesEndpoint, map[string]string{"hl": hl.String()})
 	if err != nil {
-		fmt.Println("there was an error getting the live games" + err.Error())
+		fmt.Println("there was an error getting the live games: " + err.Error())
 		return nil, err
 	}
 
@@ -60,7 +60,7 @@ func GetLiveGames(hl enums.HlType) (*models.Live, error) {
 	var liveGames = &models.Live{}
 	err = json.Unmarshal(bodyBytes, liveGames)
 	if err != nil {
-		fmt.Println("there was an error unmarshalling the liveGames" + err.Error())
+		fmt.Println("there was an error unmarshalling the liveGames: " + err.Error())
 		return nil, err
 	}
 
@@ -74,7 +74,7 @@ func GetWindow(gameID int64, startingTime time.Time) (*models.Window, error) {
 	startingTime = transformTime(startingTime)
 	bodyBytes, err := RequestLoLesportsAPI(getWindowEndpoint, map[string]string{"startingTime": startingTime.Format(time.RFC3339), "hl": enums.EnUS.String()})
 	if err != nil {
-		fmt.Println("there was an error getting the window" + err.Error())
+		fmt.Println("there was an error getting the window: " + err.Error())
 		return nil, err
 	}
 
@@ -82,7 +82,7 @@ func GetWindow(gameID int64, startingTime time.Time) (*models.Window, error) {
 	var gameWindow = &models.Window{}
 	err = json.Unmarshal(bodyBytes, gameWindow)
 	if err != nil {
-		fmt.Println("there was an error unmarshalling the gameWindow" + err.Error())
+		fmt.Println("there was an error unmarshalling the gameWindow: " + err.Error())
 		return nil, err
 	}
 
@@ -96,14 +96,14 @@ func GetDetails(gameID int64, startingTime time.Time, participantIDs string) (*m
 
 	bodyBytes, err := RequestLoLesportsAPI(getDetailsEndpoint, map[string]string{"startingTime": startingTime.String(), "participantIds": participantIDs})
 	if err != nil {
-		fmt.Println("there was an error getting the details" + err.Error())
+		fmt.Println("there was an error getting the details: " + err.Error())
 		return nil, err
 	}
 
 	var gameDetails = &models.Details{}
 	err = json.Unmarshal(bodyBytes, gameDetails)
 	if err != nil {
-		fmt.Println("there was an error unmarshalling the gameDetails" + err.Error())
+		fmt.Println("there was an error unmarshalling the gameDetails: " + err.Error())
 		return nil, err
 	}
 
@@ -116,7 +116,6 @@ func transformTime(startingTime time.Time) time.Time {
 	// Truncate milliseconds
 	startingTime = startingTime.Truncate(time.Second)
 
-	fmt.Println(startingTime)
 	// End time needs to be at least 45 seconds old.
 	startingTime = startingTime.Add(-time.Duration(60) * time.Second)
 
@@ -124,9 +123,6 @@ func transformTime(startingTime time.Time) time.Time {
 	seconds := startingTime.Second()
 	remainder := seconds % 10
 	startingTime = startingTime.Add(-time.Duration(remainder) * time.Second)
-
-	// Subtracts 10 seconds so we are always getting the previous window
-	fmt.Println(startingTime)
 
 	return startingTime
 }
